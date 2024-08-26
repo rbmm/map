@@ -161,5 +161,7 @@ public:
 		return RtlNumberGenericTableElementsAvl(this);
 	}
 
+	void Invert();
+
 	MElement* operator[](_In_ ULONG i);
 };

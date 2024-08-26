@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+_NT_BEGIN
+
 #include "map.h"
 
 class M1 : public MElement
@@ -27,6 +29,14 @@ public:
 		strcpy(str, pcsz);
 		DbgPrint("%s<%p>(%u \"%hs\")\n", __FUNCTION__, this, v, str);
 	}
+
+	M1(PCSTR pcsz, size_t len, ULONG v = 0) : v(v)
+	{
+		memcpy(str, pcsz, len);
+		str[len] = 0;
+		DbgPrint("%s<%p>(%u \"%hs\")\n", __FUNCTION__, this, v, str);
+	}
+
 };
 
 class M1InsertRemove : public InsertRemove
@@ -40,6 +50,22 @@ class M1InsertRemove : public InsertRemove
 
 public:
 	M1InsertRemove(const void* pvKey, ULONG v = 0) : InsertRemove(pvKey), v(v)
+	{
+	}
+};
+
+class M2InsertRemove : public InsertRemove
+{
+	size_t len;
+	ULONG v;
+
+	virtual void OnInsert(ElementBase* p) const
+	{
+		new(p) M1((PCSTR)key(), len, v);
+	}
+
+public:
+	M2InsertRemove(const void* pvKey, size_t len, ULONG v = 0) : InsertRemove(pvKey), v(v), len(len)
 	{
 	}
 };
@@ -386,9 +412,64 @@ void Test2()
 	}
 }
 
+BOOL IsSymbol(UCHAR c)
+{
+	return (ULONG)(c - 'A') <= 'Z' - 'A' || (ULONG)(c - 'a') < 'z' - 'a' || (ULONG)(c - '0') <= '9' - '0';
+}
+
+void TestI()
+{
+	StrMap map;
+	map.SetNoLock();
+
+	PCSTR pcsz = 
+		"Validates the authenticated user to either login to an existing user\n"
+		"profile or fall back to creation of a new user profile. Below are few\n"
+		"workflows.";
+
+__0:
+
+	PCSTR pc = pcsz;
+	while (IsSymbol(*pc)) pc++;
+
+	size_t len = pc - pcsz;
+
+	char buf[0x40];
+	if (len < sizeof(buf))
+	{
+		memcpy(buf, pcsz, len);
+		buf[len] = 0;
+		map.Insert(M2InsertRemove(buf, len, 0), offsetof(M1, str[len + 1]));
+	}
+
+	pcsz = pc;
+
+	UCHAR c;
+
+	while (!IsSymbol(c = *pcsz))
+	{
+		if (!c)
+		{
+			goto __1;
+		}
+		pcsz++;
+	}
+
+	goto __0;
+__1:
+
+	print_map(&map);
+
+	map.Invert();
+
+	print_map(&map);
+}
+
 void MapTest()
 {
+	TestI();
 	SimplyDemo();
 	Test2();
 }
 
+_NT_END

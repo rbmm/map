@@ -168,4 +168,28 @@ void MapBase::Delete(PRTL_BALANCED_LINKS node)
 	}
 }
 
+void Invert_I(PRTL_BALANCED_LINKS node)
+{
+	RTL_BALANCED_LINKS *LeftChild = node->LeftChild;
+	RTL_BALANCED_LINKS *RightChild = node->RightChild;
+
+	node->LeftChild = RightChild;
+	node->RightChild = LeftChild;
+
+	if (LeftChild)
+	{
+		Invert_I(LeftChild);
+	}
+
+	if (RightChild)
+	{
+		Invert_I(RightChild);
+	}
+}
+
+void MapBase::Invert()
+{
+	Invert_I(BalancedRoot.RightChild);
+}
+
 _NT_END
