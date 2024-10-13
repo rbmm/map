@@ -86,6 +86,7 @@ void inttest(ULONG n)
 	ULONG cb = n * (sizeof(RTL_BALANCED_LINKS) + sizeof(MT));
 	if (PBYTE buf = new UCHAR[cb])
 	{
+		DbgPrint("N = %u\n****************\n", n);
 		{
 			IntMap map(buf, cb);
 
@@ -104,7 +105,7 @@ void inttest(ULONG n)
 				} while (--n);
 
 				t = GetTickCount64() - t;
-				DbgPrint("insert: %u ms %u ns\n", t, (t * 1000000)/ m);
+				DbgPrint("insert: %u ms %u ns [%u]\n", t, (t * 1000000)/ m, map.Count());
 
 				n = m;
 				p = pu;
@@ -134,6 +135,11 @@ void inttest(ULONG n)
 
 				t = GetTickCount64() - t;
 				DbgPrint("erase: %u ms %u ns\n", t, (t * 1000000)/ m);
+
+				if (map.Count())
+				{
+					__debugbreak();
+				}
 
 				delete [] pu;
 			}
