@@ -152,6 +152,7 @@ public:
 
 	MElement* Get(_In_ const void* pvKey);
 	MElement* GetLocked(_In_ const void* pvKey, _Out_opt_ PVOID *NodeOrParent = 0);
+	BOOLEAN IsExist(_In_ const void* pvKey);
 
 	void Remove(_In_ MElement* p, _In_opt_ PVOID Node = 0, BOOL bNotLock = FALSE);
 

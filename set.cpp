@@ -109,6 +109,19 @@ MElement* SetBase::Get(const void* pvKey)
 	return p;
 }
 
+BOOLEAN SetBase::IsExist(_In_ const void* pvKey)
+{
+	InsertRemove ir(pvKey);
+
+	LockShared();
+
+	pvKey = RtlLookupElementGenericTableAvl(this, &ir);
+
+	UnlockShared();
+
+	return pvKey != 0;
+}
+
 void SetBase::Remove(MElement* p, PVOID Node, BOOL bNotLock)
 {
 	if (Node && !bNotLock)
