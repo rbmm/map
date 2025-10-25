@@ -25,6 +25,11 @@ class InsertRemove : public ElementBase
 {
 	const void* _M_key;
 	
+	void operator delete(void*, unsigned __int64)
+	{ 
+		__debugbreak();
+	}
+
 protected:
 
 	virtual const void* key() const
